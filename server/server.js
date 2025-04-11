@@ -16,7 +16,7 @@ const orderRoutes = require('./routes/orderRoutes');
 
 // Use routes
 app.use('/api/mcp', mcpRoutes);
-app.use('/api/partners', partnerRoutes);
+app.use('/api/partner', partnerRoutes);
 app.use('/api/orders', orderRoutes);
 
 // DB connection and server start

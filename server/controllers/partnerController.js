@@ -11,6 +11,40 @@ exports.registerPartner = async (req, res) => {
   }
 };
 
+//  LOGIN
+exports.loginPartner = async (req, res) => {
+  try {
+    const { email, password } = req.body
+    const partner = await PickupPartner.findOne({ email, password })
+
+    if (!partner) {
+      return res.status(401).json({ error: 'Invalid credentials' })
+    }
+
+    res.json({ _id: partner._id, name: partner.name })
+  } catch (err) {
+    res.status(500).json({ error: 'Login failed' })
+  }
+}
+
+//  DASHBOARD
+exports.getPartnerDashboard = async (req, res) => {
+  try {
+    const partner = await PickupPartner.findById(req.params.partnerId)
+
+    const orders = await Order.find({ assignedTo: req.params.partnerId })
+
+    res.json({
+      name: partner.name,
+      email: partner.email,
+      walletBalance: partner.walletBalance,
+      orders
+    })
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load dashboard' })
+  }
+};
+
 exports.loginPartner = async (req, res) => {
   try {
     const { email, password } = req.body;
