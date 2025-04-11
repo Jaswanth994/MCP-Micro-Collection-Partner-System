@@ -5,6 +5,8 @@ const pickupPartnerSchema = new mongoose.Schema({
   email: String,
   password: String,
   status: { type: String, default: 'inactive' }, // active/inactive
+  role: { type: String, default: 'Collector' },  // NEW
+  commission: { type: Number, default: 100 },    // NEW
   assignedOrders: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Order' }],
   walletBalance: { type: Number, default: 0 }
 });

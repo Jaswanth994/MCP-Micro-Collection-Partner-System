@@ -6,7 +6,10 @@ import {
   createOrder,
   assignOrder,
   getAllOrders,
-  transferFunds
+  transferFunds,
+  deletePartner,
+  addFunds,
+  getTransactions,
 } from '../services/mcpService'
 
 const Dashboard = () => {
@@ -16,26 +19,41 @@ const Dashboard = () => {
   const [orderForm, setOrderForm] = useState({ customerName: '', location: '' })
   const [orders, setOrders] = useState([])
   const [transfer, setTransfer] = useState({ to: '', amount: '' })
-
+  const [earnings, setEarnings] = useState(0)
+  const [fundsAmount, setFundsAmount] = useState('')
+  const [transactions, setTransactions] = useState([])
 
 
   const fetchDashboard = React.useCallback(async () => {
+    console.log("helooooooo")
     const res = await getDashboard(mcpId)
     setDashboard(res.data)
+    console.log("fetching......")
+    if (res.data.email) {
+      const txnRes = await getTransactions(res.data.email)
+      console.log("fetching transactions")
+      setTransactions(txnRes.data)
+    } else {
+      console.warn('No email found for MCP — skipping transaction fetch')
+    }
   }, [mcpId])
-
-
+  
 
   const fetchOrders = React.useCallback(async () => {
     const res = await getAllOrders(mcpId)
     setOrders(res.data)
+
+    // Optional: calculate earnings from completed orders
+    const completed = res.data.filter(o => o.status === 'Completed')
+    const earnings = completed.length * 100 // fixed ₹100 per order
+    setEarnings(earnings)
   }, [mcpId])
 
   useEffect(() => {
     fetchDashboard()
     fetchOrders()
   }, [mcpId, fetchDashboard, fetchOrders])
-
+  
   const handlePartnerChange = (e) => {
     setPartnerForm({ ...partnerForm, [e.target.name]: e.target.value })
   }
@@ -44,7 +62,7 @@ const Dashboard = () => {
     e.preventDefault()
     await addPartner(mcpId, partnerForm)
     alert('Partner added!')
-    setPartnerForm({ name: '', email: '', password: '' })
+    setPartnerForm({ name: '', email: '', password: '', role: 'Collector', commission: 100 })
     fetchDashboard()
   }
 
@@ -76,12 +94,29 @@ const Dashboard = () => {
       alert('Funds transferred!')
       setTransfer({ to: '', amount: '' })
       fetchDashboard()
-    } catch (err) {
-      console.error(err)
+    } catch {
       alert('Failed to transfer funds')
     }
   }
   
+  const handleDeletePartner = async (partnerId) => {
+    if (!window.confirm('Are you sure you want to delete this partner?')) return;
+    await deletePartner(mcpId, partnerId);
+    alert('Partner deleted');
+    fetchDashboard();
+  }
+
+
+  const handleAddFunds = async () => {
+    try {
+      await addFunds(mcpId, { amount: fundsAmount });
+      alert('Funds added successfully');
+      setFundsAmount('');
+      fetchDashboard(); // refresh wallet balance
+    } catch {
+      alert('Error adding funds');
+    }
+  }
   
 
   if (!dashboard) return <p>Loading...</p>
@@ -91,22 +126,107 @@ const Dashboard = () => {
       <h2>Welcome, {dashboard.name}</h2>
       <p><strong>Wallet:</strong> ₹{dashboard.walletBalance}</p>
 
+      <h3>💰 Add Funds to MCP Wallet</h3>
+      <form onSubmit={(e) => {
+        e.preventDefault();
+        handleAddFunds();
+      }}>
+        <input
+          type="number"
+          placeholder="Enter amount"
+          value={fundsAmount}
+          onChange={(e) => setFundsAmount(e.target.value)}
+          required
+        />
+        <button type="submit">Add Funds</button>
+      </form>
+
       <hr />
+
+      <h2>📊 Dashboard Overview</h2>
+      <ul>
+        <li><strong>Wallet Balance:</strong> ₹{dashboard.walletBalance}</li>
+        <li><strong>Total Partners:</strong> {dashboard.pickupPartners.length}</li>
+        <li><strong>Total Orders:</strong> {orders.length}</li>
+        <li><strong>Completed Orders:</strong> {orders.filter(o => o.status === 'Completed').length}</li>
+        <li><strong>Pending Orders:</strong> {orders.filter(o => o.status !== 'Completed').length}</li>
+        <li><strong>Total Earnings:</strong> ₹{earnings}</li>
+      </ul>
+
 
       <h3>➕ Add Pickup Partner</h3>
       <form onSubmit={handleAddPartner}>
-        <input type='text' name='name' placeholder='Name' value={partnerForm.name} onChange={handlePartnerChange} required />
-        <input type='email' name='email' placeholder='Email' value={partnerForm.email} onChange={handlePartnerChange} required />
-        <input type='password' name='password' placeholder='Password' value={partnerForm.password} onChange={handlePartnerChange} required />
+        <input
+          type='text'
+          name='name'
+          placeholder='Name'
+          value={partnerForm.name}
+          onChange={handlePartnerChange}
+          required
+        />
+        <input
+          type='email'
+          name='email'
+          placeholder='Email'
+          value={partnerForm.email}
+          onChange={handlePartnerChange}
+          required
+        />
+        <input
+          type='password'
+          name='password'
+          placeholder='Password'
+          value={partnerForm.password}
+          onChange={handlePartnerChange}
+          required
+        />
+        
+        <select name="role" value={partnerForm.role} onChange={handlePartnerChange}>
+          <option value="Collector">Collector</option>
+          <option value="Supervisor">Supervisor</option>
+        </select>
+
+        <input
+          type="number"
+          name="commission"
+          placeholder="Commission per order (₹)"
+          value={partnerForm.commission}
+          onChange={handlePartnerChange}
+          required
+        />
+
         <button type='submit'>Add Partner</button>
       </form>
+
 
       <h4>Existing Partners</h4>
       <ul>
         {dashboard.pickupPartners.map(p => (
-          <li key={p._id}>{p.name} – {p.email}</li>
+          <li key={p._id}>
+          {p.name} – {p.email}
+          <button onClick={() => handleDeletePartner(p._id)}>🗑️ Delete</button>
+       </li>
+        
         ))}
       </ul>
+
+      <h3>📈 Partner Performance</h3>
+      <ul>
+        {dashboard.pickupPartners.map(partner => {
+          const partnerOrders = orders.filter(o => o.assignedTo === partner._id)
+          const completedOrders = partnerOrders.filter(o => o.status === 'Completed').length
+          const partnerEarnings = completedOrders * 100
+
+          return (
+            <li key={partner._id}>
+              <strong>{partner.name}</strong> – {partner.email} – {partner.status} <br />
+              Orders Assigned: {partnerOrders.length}, Completed: {completedOrders}, Earnings: ₹{partnerEarnings}
+              <button onClick={() => handleDeletePartner(partner._id)}>🗑️ Delete</button>
+            </li>
+          )
+        })}
+      </ul>
+
 
       <h3>💸 Transfer Funds to Partner</h3>
       <form onSubmit={(e) => {
@@ -132,6 +252,31 @@ const Dashboard = () => {
         />
         <button type="submit">Transfer</button>
       </form>
+
+      <h3>🧾 Transaction History</h3>
+      <table border="1" cellPadding="8">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>From</th>
+            <th>To</th>
+            <th>Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {transactions.map(txn => (
+            <tr key={txn._id}>
+              <td>{new Date(txn.createdAt).toLocaleString()}</td>
+              <td>{txn.type}</td>
+              <td>{txn.from}</td>
+              <td>{txn.to}</td>
+              <td>{txn.amount}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
 
 
       <hr />
@@ -164,6 +309,23 @@ const Dashboard = () => {
           )}
         </div>
       ))}
+      <h3>📈 Reports & Analytics</h3>
+    <ul>
+      <li>🧾 Total Earnings from Completed Orders: ₹{earnings}</li>
+      <li>📦 Orders Completed Today: {
+        orders.filter(o =>
+          o.status === 'Completed' &&
+          new Date(o.updatedAt).toDateString() === new Date().toDateString()
+        ).length
+      }</li>
+      <li>📊 Efficiency Rate (Completed / Total): {
+        orders.length > 0
+          ? `${Math.round(orders.filter(o => o.status === 'Completed').length / orders.length * 100)}%`
+          : '0%'
+      }</li>
+    </ul>
+
+
     </div>
   )
 }

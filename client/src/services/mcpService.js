@@ -10,3 +10,6 @@ export const transferFunds = (mcpId, data) => api.post(`/mcp/transfer-funds/${mc
 export const createOrder = (mcpId, data) => api.post(`/orders/create/${mcpId}`, data)
 export const assignOrder = (orderId, data) => api.post(`/orders/assign/${orderId}`, data)
 export const getAllOrders = (mcpId) => api.get(`/orders/mcp/${mcpId}`)
+export const deletePartner = (mcpId, partnerId) => api.delete(`/mcp/delete-partner/${mcpId}/${partnerId}`)
+export const addFunds = (mcpId, data) => api.post(`/mcp/add-funds/${mcpId}`, data);
+export const getTransactions = (mcpEmail) => api.get(`/mcp/transactions/${mcpEmail}`);
