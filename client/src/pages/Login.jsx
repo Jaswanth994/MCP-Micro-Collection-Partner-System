@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { loginMCP } from '../services/mcpService'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate , Link} from 'react-router-dom'
 import { toast } from 'react-toastify'
 
 const Login = () => {
@@ -31,6 +31,11 @@ const Login = () => {
         <input type='password' name='password' placeholder='Password' onChange={handleChange} required />
         <button type='submit'>Login</button>
       </form>
+
+      <p style={{ marginTop: '10px' }}>
+        Don't have an account? <Link to="/register">Register here</Link>
+      </p>
+      
     </div>
   )
 }

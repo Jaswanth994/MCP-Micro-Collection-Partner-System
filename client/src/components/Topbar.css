@@ -1,0 +1,46 @@
+/* Topbar.css */
+.topbar {
+    height: 60px;
+    background-color: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  .topbar-search {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 250px;
+  }
+  
+  .topbar-icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .topbar-icon {
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  
+  .topbar-profile img {
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  .logout-button {
+    background-color: #d63031;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
   getDashboard,
@@ -37,6 +37,20 @@ const Dashboard = () => {
     }
   }, [mcpId])
   
+  const navigate = useNavigate()
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('authToken') // or whatever you're using
+    navigate('/login') // your login route
+    toast.success("Logout Successfull !!")
+    } catch  {
+      toast.error("LogOut Failed")
+      
+    }
+    
+  }
+  
+
 
   const fetchOrders = React.useCallback(async () => {
     const res = await getAllOrders(mcpId)
@@ -123,6 +137,7 @@ const Dashboard = () => {
   return (
     <div style={{ padding: '20px' }}>
       <h2>Welcome, {dashboard.name}</h2>
+      <button onClick={handleLogout} style={{ float: 'right' }}>🚪 Logout</button>
       <p><strong>Wallet:</strong> ₹{dashboard.walletBalance}</p>
 
       <h3>💰 Add Funds to MCP Wallet</h3>
@@ -151,6 +166,8 @@ const Dashboard = () => {
         <li><strong>Pending Orders:</strong> {orders.filter(o => o.status !== 'Completed').length}</li>
         <li><strong>Total Earnings:</strong> ₹{earnings}</li>
       </ul>
+
+      <hr />
 
 
       <h3>➕ Add Pickup Partner</h3>
@@ -225,6 +242,8 @@ const Dashboard = () => {
           )
         })}
       </ul>
+
+      <hr />
 
 
       <h3>💸 Transfer Funds to Partner</h3>
@@ -308,6 +327,9 @@ const Dashboard = () => {
           )}
         </div>
       ))}
+
+      <hr />
+      <hr />
       <h3>📈 Reports & Analytics</h3>
     <ul>
       <li>🧾 Total Earnings from Completed Orders: ₹{earnings}</li>

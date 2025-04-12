@@ -1,0 +1,19 @@
+.dashboard-section {
+    margin-bottom: 2rem;
+  }
+  
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  
+  .card {
+    background-color: #ffffff;
+    padding: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    font-weight: 500;
+    font-size: 1rem;
+  }
+  

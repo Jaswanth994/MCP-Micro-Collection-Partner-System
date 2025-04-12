@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { registerMCP } from '../services/mcpService'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 const Register = () => {
   const [form, setForm] = useState({ name: '', email: '', password: '' })
@@ -31,6 +31,9 @@ const Register = () => {
         <input type='password' name='password' placeholder='Password' onChange={handleChange} required />
         <button type='submit'>Register</button>
       </form>
+       <p style={{ marginTop: '10px' }}>
+               Have an account? <Link to="/Login">Login here</Link>
+             </p>
     </div>
   )
 }

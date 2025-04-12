@@ -12,7 +12,8 @@ function App() {
   return (
     <>
       <Routes> 
-        <Route path='/' element={<Login />} />
+        <Route path='' element={<Register />} />
+        <Route path='/Login' element={<Login />} />
         <Route path='/register' element={<Register />} />
         <Route path='/dashboard/:mcpId' element={<Dashboard />} />
         <Route path="/partner-login" element={<PartnerLogin />} />
