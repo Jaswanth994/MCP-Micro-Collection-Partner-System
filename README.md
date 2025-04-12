@@ -1,6 +1,6 @@
 
 
-```markdown
+
 # MCP Micro Collection Partner System
 
 
