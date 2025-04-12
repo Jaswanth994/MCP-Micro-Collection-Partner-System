@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { loginMCP } from '../services/mcpService'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' })
@@ -14,11 +15,11 @@ const Login = () => {
     e.preventDefault()
     try {
       const res = await loginMCP(form)
-      alert('Login successful')
+      toast.success('Login successful')
       navigate(`/dashboard/${res.data._id}`)
     } catch (err) {
       console.error(err)
-      alert('Invalid credentials')
+      toast.error('Invalid credentials')
     }
   }
 

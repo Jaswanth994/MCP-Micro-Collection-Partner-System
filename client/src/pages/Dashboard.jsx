@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import {
   getDashboard,
   addPartner,
@@ -25,10 +26,8 @@ const Dashboard = () => {
 
 
   const fetchDashboard = React.useCallback(async () => {
-    console.log("helooooooo")
     const res = await getDashboard(mcpId)
     setDashboard(res.data)
-    console.log("fetching......")
     if (res.data.email) {
       const txnRes = await getTransactions(res.data.email)
       console.log("fetching transactions")
@@ -61,7 +60,7 @@ const Dashboard = () => {
   const handleAddPartner = async (e) => {
     e.preventDefault()
     await addPartner(mcpId, partnerForm)
-    alert('Partner added!')
+    toast.success('Partner added!')
     setPartnerForm({ name: '', email: '', password: '', role: 'Collector', commission: 100 })
     fetchDashboard()
   }
@@ -73,14 +72,14 @@ const Dashboard = () => {
   const handleCreateOrder = async (e) => {
     e.preventDefault()
     await createOrder(mcpId, orderForm)
-    alert('Order created!')
+    toast.success('Order created!')
     setOrderForm({ customerName: '', location: '' })
     fetchOrders()
   }
 
   const handleAssign = async (orderId, partnerId) => {
     await assignOrder(orderId, { partnerId })
-    alert('Order assigned!')
+    toast.success('Order assigned!')
     fetchOrders()
   }
 
@@ -91,18 +90,18 @@ const Dashboard = () => {
         partnerId: transfer.to,
         amount: Number(transfer.amount)
       })
-      alert('Funds transferred!')
+      toast.success('Funds transferred!')
       setTransfer({ to: '', amount: '' })
       fetchDashboard()
     } catch {
-      alert('Failed to transfer funds')
+      toast.error('Failed to transfer funds')
     }
   }
   
   const handleDeletePartner = async (partnerId) => {
     if (!window.confirm('Are you sure you want to delete this partner?')) return;
     await deletePartner(mcpId, partnerId);
-    alert('Partner deleted');
+    toast.success('Partner deleted');
     fetchDashboard();
   }
 
@@ -110,11 +109,11 @@ const Dashboard = () => {
   const handleAddFunds = async () => {
     try {
       await addFunds(mcpId, { amount: fundsAmount });
-      alert('Funds added successfully');
+      toast.success('Funds added successfully');
       setFundsAmount('');
       fetchDashboard(); // refresh wallet balance
     } catch {
-      alert('Error adding funds');
+      toast.error('Error adding funds');
     }
   }
   

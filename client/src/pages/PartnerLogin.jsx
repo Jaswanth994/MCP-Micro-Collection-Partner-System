@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { loginPartner } from '../services/partnerService'
+import { toast } from 'react-toastify'
 
 const PartnerLogin = () => {
   const [form, setForm] = useState({ email: '', password: '' })
@@ -15,9 +16,10 @@ const PartnerLogin = () => {
     try {
       const res = await loginPartner(form)
       localStorage.setItem('partnerId', res.data._id)
+      toast.success("Login Successfull")
       navigate('/partner-dashboard')
     } catch {
-      alert('Login failed')
+      toast.error('Login failed!! Invalid Credentials')
     }
   }
 
