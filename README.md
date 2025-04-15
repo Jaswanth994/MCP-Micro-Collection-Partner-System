@@ -7,7 +7,12 @@
 A web application for managing Micro Collection Partners (MCP) and their pickup partners, with order management, wallet transactions, and analytics.
 
 ## Deployed Link
-https://mcp-micro-collection-partner-system-pata.vercel.app/
+MCP Web-App Link https://mcp-micro-collection-partner-system-pata.vercel.app/
+
+Pickup Partner Web-App Link https://mcp-micro-collection-partner-system-pata.vercel.app/partner-login
+
+#### Note:
+   we can only login into pickup-partner app through the partners created by MCP.
 
 ## Table of Contents
 - [Features](#features)
