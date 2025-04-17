@@ -11,8 +11,9 @@ MCP Web-App Link https://mcp-micro-collection-partner-system-pata.vercel.app/
 
 Pickup Partner Web-App Link https://mcp-micro-collection-partner-system-pata.vercel.app/partner-login
 
-#### Note:
-   we can only login into pickup-partner app through the partners created by MCP.
+### Note:
+####   **Wait for atleast 10sec after clicking on login or signup button** as the backend is taking a long time to load since it was deployed on render.
+####   We can only login into pickup-partner app through the partners created by MCP.
 
 ## Table of Contents
 - [Features](#features)
